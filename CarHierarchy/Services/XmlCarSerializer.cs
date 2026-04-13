@@ -40,7 +40,6 @@ namespace CarHierarchy.Services
             {
                 return (List<Car>)_serializer.Deserialize(reader) ?? new List<Car>();
             }
-            //fix
         }
     }
 }

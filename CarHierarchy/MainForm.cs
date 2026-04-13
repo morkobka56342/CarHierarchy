@@ -55,7 +55,7 @@ namespace CarHierarchy
 
         public void btnAddCar_Click(object sender, EventArgs e)
         {
-            // Pass the factory to the dialog via constructor
+            // pass the factory to the dialog via constructor
             using (var dialog = new AddCarDialog(_carFactory))
             {
                 if (dialog.ShowDialog() == DialogResult.OK && dialog.CreatedCar != null)
