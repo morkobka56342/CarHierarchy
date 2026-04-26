@@ -13,14 +13,18 @@ namespace CarHierarchy.Services
 
             if (Directory.Exists(pluginsPath))
             {
+                //only .dll
                 foreach (var file in Directory.GetFiles(pluginsPath, "*.dll"))
                 {
                     try
                     {
+                        //load to process
                         var assembly = Assembly.LoadFrom(Path.GetFullPath(file));
                         RegisterAllCarsFromAssembly(assembly);
                     }
-                    catch { }
+                    catch {
+                        //skip      
+                          }
                 }
             }
         }
@@ -28,20 +32,24 @@ namespace CarHierarchy.Services
         private void RegisterAllCarsFromAssembly(Assembly assembly)
         {
             var types = assembly.GetTypes()
-                .Where(t => t.IsSubclassOf(typeof(Car)) && !t.IsAbstract);
+                .Where(t => t.IsSubclassOf(typeof(Car)) && !t.IsAbstract); 
 
             foreach (var type in types)
             {
                 try
                 {
+                    // find constructor and create new object
                     var instance = (Car)Activator.CreateInstance(type);
                     string typeName = instance.GetCarType();
+                    // dublicates
                     if (!_pluginTypes.ContainsKey(typeName))
                     {
                         _pluginTypes.Add(typeName, type);
                     }
                 }
-                catch { }
+                catch { 
+                        // skip
+                    }
             }
         }
 
