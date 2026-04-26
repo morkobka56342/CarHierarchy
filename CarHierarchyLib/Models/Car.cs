@@ -1,13 +1,7 @@
 ﻿using System.Xml.Serialization;
 
-namespace CarHierarchy.Models
+namespace CarHierarchyLib.Models
 {
-    [XmlInclude(typeof(PassengerCar))]
-    [XmlInclude(typeof(Truck))]
-    [XmlInclude(typeof(SportCar))]
-    [XmlInclude(typeof(ElectricCar))]
-    [XmlInclude(typeof(DieselTruck))]
-    [XmlInclude(typeof(HybridCar))]
     public abstract class Car : ICar
     {
         public string Brand { get; set; } = "Unknown";

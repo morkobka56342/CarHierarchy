@@ -1,4 +1,4 @@
-﻿namespace CarHierarchy.Models
+﻿namespace CarHierarchyLib.Models
 {
     public class ElectricCar : PassengerCar
     {

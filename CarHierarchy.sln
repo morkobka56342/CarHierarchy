@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarHierarchy", "CarHierarchy\CarHierarchy.csproj", "{7D1F1E5E-28EB-48CB-BFAB-D86EC3EFF788}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarHierarchy", "CarHierarchy\CarHierarchy.csproj", "{7D1F1E5E-28EB-48CB-BFAB-D86EC3EFF788}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarHierarchyLib", "CarHierarchyLib\CarHierarchyLib.csproj", "{45A7B15D-F428-4675-A416-918E83710E7A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusPlugin", "BusPlugin\BusPlugin.csproj", "{2AC6A8C5-C9B1-4B10-BE5D-B397D846AF78}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotorcyclePlugin", "MotorcyclePlugin\MotorcyclePlugin.csproj", "{8CD87CE9-B60F-4FE5-90A0-E67EBD0B6B1F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TractorPlugin", "TractorPlugin\TractorPlugin.csproj", "{3173DEEF-2CE4-49D7-B0D1-0F502ED51909}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +23,22 @@ Global
 		{7D1F1E5E-28EB-48CB-BFAB-D86EC3EFF788}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D1F1E5E-28EB-48CB-BFAB-D86EC3EFF788}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D1F1E5E-28EB-48CB-BFAB-D86EC3EFF788}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45A7B15D-F428-4675-A416-918E83710E7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45A7B15D-F428-4675-A416-918E83710E7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45A7B15D-F428-4675-A416-918E83710E7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45A7B15D-F428-4675-A416-918E83710E7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AC6A8C5-C9B1-4B10-BE5D-B397D846AF78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AC6A8C5-C9B1-4B10-BE5D-B397D846AF78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AC6A8C5-C9B1-4B10-BE5D-B397D846AF78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AC6A8C5-C9B1-4B10-BE5D-B397D846AF78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CD87CE9-B60F-4FE5-90A0-E67EBD0B6B1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CD87CE9-B60F-4FE5-90A0-E67EBD0B6B1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CD87CE9-B60F-4FE5-90A0-E67EBD0B6B1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CD87CE9-B60F-4FE5-90A0-E67EBD0B6B1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3173DEEF-2CE4-49D7-B0D1-0F502ED51909}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3173DEEF-2CE4-49D7-B0D1-0F502ED51909}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3173DEEF-2CE4-49D7-B0D1-0F502ED51909}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3173DEEF-2CE4-49D7-B0D1-0F502ED51909}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using CarHierarchy.Models;
+using CarHierarchyLib.Models;
 using CarHierarchy.Services;
 using CarHierarchy.Forms;
 
@@ -9,6 +6,7 @@ namespace CarHierarchy
 {
     public partial class MainForm : Form
     {
+ 
         private List<Car> _cars;
         private XmlCarSerializer _serializer;
         private readonly ICarFactory _carFactory;
@@ -19,7 +17,7 @@ namespace CarHierarchy
 
             _cars = new List<Car>();
             _serializer = new XmlCarSerializer();
-            _carFactory = new CarFactory(); 
+            _carFactory = new CarFactory();
 
             UpdateCarList();
             UpdateCarCount();
@@ -55,7 +53,6 @@ namespace CarHierarchy
 
         public void btnAddCar_Click(object sender, EventArgs e)
         {
-            // pass the factory to the dialog via constructor
             using (var dialog = new AddCarDialog(_carFactory))
             {
                 if (dialog.ShowDialog() == DialogResult.OK && dialog.CreatedCar != null)
@@ -85,11 +82,6 @@ namespace CarHierarchy
                     ClearPropertyGrid();
                 }
             }
-            else
-            {
-                MessageBox.Show("Please select a vehicle to delete!", "Warning",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
         }
 
         public void btnSaveChange_Click(object sender, EventArgs e)
@@ -104,24 +96,22 @@ namespace CarHierarchy
         {
             using (SaveFileDialog dialog = new SaveFileDialog())
             {
-                // settings for save
                 dialog.Filter = "XML files (*.xml)|*.xml|All files (*.*)|*.*";
                 dialog.DefaultExt = "xml";
                 dialog.FileName = "cars.xml";
-                dialog.Title = "Save Vehicle List";
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     try
                     {
-                        _serializer.Serialize(dialog.FileName, _cars);
-                        MessageBox.Show($"Successfully saved {_cars.Count} vehicles!\nFile: {dialog.FileName}",
-                            "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        var types = ((CarFactory)_carFactory).GetAllRegisteredTypes();
+                        _serializer.Serialize(dialog.FileName, _cars, types);
+
+                        MessageBox.Show("Saved successfully!");
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Save error: {ex.Message}", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"Save error: {ex.Message}");
                     }
                 }
             }
@@ -132,23 +122,21 @@ namespace CarHierarchy
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
                 dialog.Filter = "XML files (*.xml)|*.xml|All files (*.*)|*.*";
-                dialog.Title = "Load Vehicle List";
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     try
                     {
-                        _cars = _serializer.Deserialize(dialog.FileName);
+                        var types = ((CarFactory)_carFactory).GetAllRegisteredTypes();
+                        _cars = _serializer.Deserialize(dialog.FileName, types);
+
                         UpdateCarList();
                         UpdateCarCount();
                         ClearPropertyGrid();
-                        MessageBox.Show($"Successfully loaded {_cars.Count} vehicles!",
-                            "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Load error: {ex.Message}", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"Load error: {ex.Message}");
                     }
                 }
             }
