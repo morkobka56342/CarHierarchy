@@ -36,13 +36,15 @@
             btnSave = new Button();
             btnLoad = new Button();
             labelCarCount = new Label();
+            btnAddPlugin = new Button();
+            comboBoxPlugins = new ComboBox();
             SuspendLayout();
             // 
             // propertyGrid
             // 
             propertyGrid.Location = new Point(834, 12);
             propertyGrid.Name = "propertyGrid";
-            propertyGrid.Size = new Size(303, 423);
+            propertyGrid.Size = new Size(303, 315);
             propertyGrid.TabIndex = 0;
             // 
             // listBoxDisplayCars
@@ -113,11 +115,34 @@
             labelCarCount.TabIndex = 7;
             labelCarCount.Text = "label1";
             // 
+            // btnAddPlugin
+            // 
+            btnAddPlugin.Location = new Point(834, 333);
+            btnAddPlugin.Name = "btnAddPlugin";
+            btnAddPlugin.Size = new Size(303, 43);
+            btnAddPlugin.TabIndex = 8;
+            btnAddPlugin.Text = "Add Plugin";
+            btnAddPlugin.UseVisualStyleBackColor = true;
+            btnAddPlugin.Click += btnAddPlugin_Click;
+            // 
+            // comboBoxPlugins
+            // 
+            comboBoxPlugins.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxPlugins.Enabled = false;
+            comboBoxPlugins.FormattingEnabled = true;
+            comboBoxPlugins.Location = new Point(834, 382);
+            comboBoxPlugins.Name = "comboBoxPlugins";
+            comboBoxPlugins.Size = new Size(303, 28);
+            comboBoxPlugins.TabIndex = 9;
+            comboBoxPlugins.SelectedIndexChanged += comboBoxPlugins_SelectedIndexChanged;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1149, 547);
+            Controls.Add(comboBoxPlugins);
+            Controls.Add(btnAddPlugin);
             Controls.Add(labelCarCount);
             Controls.Add(btnLoad);
             Controls.Add(btnSave);
@@ -142,5 +167,7 @@
         private Button btnSave; //for save xml
         private Button btnLoad; //for load xml
         private Label labelCarCount; //for display car count
+        private Button btnAddPlugin;
+        private ComboBox comboBoxPlugins;
     }
 }

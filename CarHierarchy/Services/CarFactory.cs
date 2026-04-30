@@ -62,6 +62,19 @@ namespace CarHierarchy.Services
             throw new ArgumentException($"Type {typeName} is not found.");
         }
 
+        public void RegisterPluginFromFile(string filePath)
+        {
+            try
+            {
+                var assembly = Assembly.LoadFrom(Path.GetFullPath(filePath));
+                RegisterAllCarsFromAssembly(assembly);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Can not upload file: {ex.Message}");
+            }
+        }
+
         public IEnumerable<string> GetAvailableTypes() => _pluginTypes.Keys;
 
         public IEnumerable<Type> GetAllRegisteredTypes() => _pluginTypes.Values;

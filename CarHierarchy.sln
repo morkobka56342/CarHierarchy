@@ -11,7 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusPlugin", "BusPlugin\BusP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotorcyclePlugin", "MotorcyclePlugin\MotorcyclePlugin.csproj", "{8CD87CE9-B60F-4FE5-90A0-E67EBD0B6B1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TractorPlugin", "TractorPlugin\TractorPlugin.csproj", "{3173DEEF-2CE4-49D7-B0D1-0F502ED51909}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TractorPlugin", "TractorPlugin\TractorPlugin.csproj", "{3173DEEF-2CE4-49D7-B0D1-0F502ED51909}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginBase", "PluginBase\PluginBase.csproj", "{AFDB3F4B-12AC-4994-9A74-F1A9B7110DE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonTransformerPlugin", "JsonTransformerPlugin\JsonTransformerPlugin.csproj", "{9958AEFE-7060-436C-B294-B12EA8516737}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SortPlugin", "SortPlugin\SortPlugin.csproj", "{1F5932A4-6FA1-4A5E-B0A7-EED795F16A81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,18 @@ Global
 		{3173DEEF-2CE4-49D7-B0D1-0F502ED51909}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3173DEEF-2CE4-49D7-B0D1-0F502ED51909}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3173DEEF-2CE4-49D7-B0D1-0F502ED51909}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFDB3F4B-12AC-4994-9A74-F1A9B7110DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFDB3F4B-12AC-4994-9A74-F1A9B7110DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFDB3F4B-12AC-4994-9A74-F1A9B7110DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFDB3F4B-12AC-4994-9A74-F1A9B7110DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9958AEFE-7060-436C-B294-B12EA8516737}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9958AEFE-7060-436C-B294-B12EA8516737}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9958AEFE-7060-436C-B294-B12EA8516737}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9958AEFE-7060-436C-B294-B12EA8516737}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F5932A4-6FA1-4A5E-B0A7-EED795F16A81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F5932A4-6FA1-4A5E-B0A7-EED795F16A81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F5932A4-6FA1-4A5E-B0A7-EED795F16A81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F5932A4-6FA1-4A5E-B0A7-EED795F16A81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

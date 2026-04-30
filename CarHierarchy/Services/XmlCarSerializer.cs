@@ -9,23 +9,27 @@ namespace CarHierarchy.Services
 {
     public class XmlCarSerializer
     {
-        public void Serialize(string filePath, List<Car> cars, IEnumerable<Type> knownTypes)
+
+        public string SerializeToString(List<Car> cars, IEnumerable<Type> knownTypes)
         {
             var serializer = new XmlSerializer(typeof(List<Car>), knownTypes.ToArray());
-            using (var writer = new StreamWriter(filePath))
+
+            using (var writer = new StringWriter())
             {
                 serializer.Serialize(writer, cars);
+                return writer.ToString();
             }
         }
 
-        public List<Car> Deserialize(string filePath, IEnumerable<Type> knownTypes)
+        public List<Car> DeserializeFromString(string xmlData, IEnumerable<Type> knownTypes)
         {
-            if (!File.Exists(filePath)) return new List<Car>();
+            if (string.IsNullOrWhiteSpace(xmlData)) return new List<Car>();
 
             try
             {
                 var serializer = new XmlSerializer(typeof(List<Car>), knownTypes.ToArray());
-                using (var reader = new StreamReader(filePath))
+
+                using (var reader = new StringReader(xmlData))
                 {
                     return (List<Car>)serializer.Deserialize(reader) ?? new List<Car>();
                 }
