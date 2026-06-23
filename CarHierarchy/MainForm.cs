@@ -2,14 +2,15 @@ using CarHierarchyLib.Models;
 using CarHierarchy.Services;
 using CarHierarchy.Forms;
 using PluginBase;
+using CarHierarchy.Patterns.Adapter;
+using CarHierarchy.Patterns.Observer;
+using CarHierarchy.Patterns.Singleton;
 
 namespace CarHierarchy
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, ICarListObserver
     {
-
-        private List<Car> _cars;
-        private XmlCarSerializer _serializer;
+        private CarListSubject _carSubject;  
         private readonly ICarFactory _carFactory;
         private List<IDataTransformer> _transformers = new List<IDataTransformer>();
 
@@ -17,11 +18,20 @@ namespace CarHierarchy
         {
             InitializeComponent();
 
-            _cars = new List<Car>();
-            _serializer = new XmlCarSerializer();
+    
+            _carSubject = new CarListSubject();
+            _carSubject.Subscribe(this); 
+
             _carFactory = new CarFactory();
 
-            RefreshTransformerList(); 
+            RefreshTransformerList();
+            
+        }
+
+     
+        public void OnCarsChanged(IReadOnlyList<Car> cars)
+        {
+            
             UpdateCarList();
             UpdateCarCount();
         }
@@ -30,7 +40,6 @@ namespace CarHierarchy
         {
             _transformers.Clear();
             comboBoxPlugins.Items.Clear();
-
             comboBoxPlugins.Items.Add("None (Standard XML)");
 
             string pluginsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
@@ -41,20 +50,38 @@ namespace CarHierarchy
                 try
                 {
                     var assembly = System.Reflection.Assembly.LoadFrom(Path.GetFullPath(file));
+                    var types = assembly.GetTypes().Where(t => !t.IsInterface && !t.IsAbstract);
 
-                    var pluginTypes = assembly.GetTypes()
-                        .Where(t => typeof(IDataTransformer).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
-
-                    foreach (var type in pluginTypes)
+                    foreach (var type in types)
                     {
-                        var instance = (IDataTransformer)Activator.CreateInstance(type);
-                        _transformers.Add(instance);
-                        comboBoxPlugins.Items.Add(instance.Name);
+                        if (typeof(IDataTransformer).IsAssignableFrom(type))
+                        {
+                            var instance = (IDataTransformer)Activator.CreateInstance(type);
+                            _transformers.Add(instance);
+                            comboBoxPlugins.Items.Add(instance.Name);
+                        }
+                        else if (type.GetInterface("IDataProcessorPlugin") != null)
+                        {
+                            object foreignPlugin = Activator.CreateInstance(type);
+
+                            var nameProp = type.GetProperty("ProcessorName");
+                            var method = type.GetMethod("ProcessBeforeSave");
+
+                            if (nameProp != null && method != null)
+                            {
+                                string name = nameProp.GetValue(foreignPlugin)?.ToString() ?? "Unknown Plugin";
+
+                                Func<string, string> transformFunc = (xml) =>
+                                    (string)method.Invoke(foreignPlugin, new object[] { xml });
+
+                                var adapter = new ReflectionDataProcessorAdapter(name, transformFunc);
+                                _transformers.Add(adapter);
+                                comboBoxPlugins.Items.Add(adapter.Name);
+                            }
+                        }
                     }
                 }
-                catch
-                {
-                }
+                catch { }
             }
 
             if (comboBoxPlugins.Items.Count > 0)
@@ -64,12 +91,12 @@ namespace CarHierarchy
         private void UpdateCarList()
         {
             listBoxDisplayCars.DataSource = null;
-            listBoxDisplayCars.DataSource = _cars;
+            listBoxDisplayCars.DataSource = _carSubject.Cars.ToList();  // Берем список из Subject
         }
 
         private void UpdateCarCount()
         {
-            labelCarCount.Text = $"Total vehicles: {_cars.Count}";
+            labelCarCount.Text = $"Total vehicles: {_carSubject.Cars.Count}";
         }
 
         private void ClearPropertyGrid()
@@ -95,9 +122,8 @@ namespace CarHierarchy
             {
                 if (dialog.ShowDialog() == DialogResult.OK && dialog.CreatedCar != null)
                 {
-                    _cars.Add(dialog.CreatedCar);
-                    UpdateCarList();
-                    UpdateCarCount();
+                    _carSubject.AddCar(dialog.CreatedCar);  
+                    
                 }
             }
         }
@@ -114,25 +140,24 @@ namespace CarHierarchy
 
                 if (result == DialogResult.Yes)
                 {
-                    _cars.Remove(selected);
-                    UpdateCarList();
-                    UpdateCarCount();
+                    _carSubject.RemoveCar(selected);  
                     ClearPropertyGrid();
+                   
                 }
             }
         }
 
         public void btnSaveChange_Click(object sender, EventArgs e)
         {
-            UpdateCarList();
-            UpdateCarCount();
+            
+            _carSubject.NotifyChanged();
             MessageBox.Show("Property changes applied!", "Success",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public void btnSave_Click(object sender, EventArgs e)
         {
-            if (_cars == null || _cars.Count == 0) return;
+            if (_carSubject.Cars.Count == 0) return;
 
             using (SaveFileDialog dialog = new SaveFileDialog())
             {
@@ -158,7 +183,9 @@ namespace CarHierarchy
                     {
                         var types = ((CarFactory)_carFactory).GetAllRegisteredTypes();
 
-                        string dataToSave = _serializer.SerializeToString(_cars, types);
+                      
+                        var serializer = SerializerSingleton.Instance;
+                        string dataToSave = serializer.SerializeToString(_carSubject.Cars.ToList(), types);
 
                         if (comboBoxPlugins.SelectedIndex > 0)
                         {
@@ -171,19 +198,18 @@ namespace CarHierarchy
 
                         File.WriteAllText(dialog.FileName, dataToSave);
 
-                     
                         MessageBox.Show("File saved successfully!", "Success",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
                     {
-                 
                         MessageBox.Show($"Save error: {ex.Message}", "Error",
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
         }
+
         public void btnLoad_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
@@ -197,10 +223,13 @@ namespace CarHierarchy
                         var types = ((CarFactory)_carFactory).GetAllRegisteredTypes();
 
                         string fileContent = File.ReadAllText(dialog.FileName);
-                        _cars = _serializer.DeserializeFromString(fileContent, types);
 
-                        UpdateCarList();
-                        UpdateCarCount();
+                   
+                        var serializer = SerializerSingleton.Instance;
+                        var loadedCars = serializer.DeserializeFromString(fileContent, types);
+
+                        
+                        _carSubject.SetCars(loadedCars);
 
                         comboBoxPlugins.Enabled = true;
 
@@ -220,51 +249,35 @@ namespace CarHierarchy
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                string selectedPlugin = comboBoxPlugins.SelectedItem.ToString();
-
-                if (selectedPlugin.Contains("JSON"))
-                {
-                    dialog.Filter = "JSON files (*.json)|*.json";
-                    dialog.DefaultExt = "json";
-                }
-                else
-                {
-                    dialog.Filter = "XML files (*.xml)|*.xml";
-                    dialog.DefaultExt = "xml";
-                }
+                dialog.Filter = "C# Plugins (*.dll)|*.dll";
+                dialog.Title = "Select plugin file (DLL)";
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     try
                     {
+                        string pluginsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
+                        if (!Directory.Exists(pluginsDir)) Directory.CreateDirectory(pluginsDir);
+
+                        string destFile = Path.Combine(pluginsDir, Path.GetFileName(dialog.FileName));
+
+                        if (Path.GetFullPath(dialog.FileName) != Path.GetFullPath(destFile))
+                        {
+                            File.Copy(dialog.FileName, destFile, true);
+                        }
+
                         var factory = _carFactory as CarFactory;
                         if (factory != null)
                         {
-                            factory.RegisterPluginFromFile(dialog.FileName);
-
-                            string pluginsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins");
-                            if (!Directory.Exists(pluginsDir))
-                            {
-                                Directory.CreateDirectory(pluginsDir);
-                            }
-
-                            string destFile = Path.Combine(pluginsDir, Path.GetFileName(dialog.FileName));
-
-                            if (Path.GetFullPath(dialog.FileName) != Path.GetFullPath(destFile))
-                            {
-                                File.Copy(dialog.FileName, destFile, true);
-                            }
-
+                            factory.RegisterPluginFromFile(destFile);
                             RefreshTransformerList();
-                       
-
-                            MessageBox.Show("Plugin successfully added and registered!", "Success",
+                            MessageBox.Show("Plugin (DLL) successfully added!", "Success",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error adding plugin: {ex.Message}", "Error",
+                        MessageBox.Show($"Error loading DLL: {ex.Message}", "Error",
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
@@ -277,10 +290,16 @@ namespace CarHierarchy
 
             if (selectedPlugin.Contains("Sort"))
             {
-                _cars = _cars.OrderBy(c => c.Brand).ThenBy(c => c.Model).ToList();
-
-                UpdateCarList();
+                _carSubject.SortByBrand();  
+               
             }
+        }
+
+    
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _carSubject.Unsubscribe(this);  
+            base.OnFormClosed(e);
         }
     }
 }
